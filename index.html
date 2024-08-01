@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert XLSX to TXT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>Convert XLSX to TXT</h1>
+    <div>
+        <label for="fileInput">Upload XLSX File:</label>
+        <input type="file" id="fileInput" accept=".xlsx">
+    </div>
+    <div>
+        <label for="textBox">File Content:</label>
+        <textarea id="textBox" rows="10" cols="50" placeholder="File content will be displayed here"></textarea>
+    </div>
+    <div>
+        <label for="filenameInput">Filename:</label>
+        <input type="text" id="filenameInput" placeholder="Enter filename">
+    </div>
+    <button id="saveBtn">Save as TXT</button>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) { 
+            const file = event.target.files[0]; 
+            if (!file) return; 
+         
+            const reader = new FileReader(); 
+            reader.onload = function(e) { 
+                const data = new Uint8Array(e.target.result); 
+                const workbook = XLSX.read(data, { type: 'array' }); 
+                let txtContent = ''; 
+         
+                workbook.SheetNames.forEach(sheetName => { 
+                    const sheet = workbook.Sheets[sheetName]; 
+                    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }); 
+                    json.forEach(row => { 
+                        txtContent += row.join('\t') + '\n'; 
+                    }); 
+                }); 
+         
+                document.getElementById('textBox').value = txtContent; 
+            }; 
+         
+            reader.readAsArrayBuffer(file); 
+        }); 
+         
+        document.getElementById('saveBtn').addEventListener('click', function() { 
+            const textBox = document.getElementById('textBox'); 
+            const txtContent = textBox.value; 
+            const filenameInput = document.getElementById('filenameInput'); 
+            const filename = filenameInput.value.trim() || 'converted-file'; // Default filename if input is empty 
+            const blob = new Blob([txtContent], { type: 'text/plain' }); 
+            const url = URL.createObjectURL(blob); 
+             
+            const a = document.createElement('a'); 
+            a.href = url; 
+            a.download = `${filename}.txt`; 
+            a.click(); 
+             
+            // Clean up the URL object 
+            URL.revokeObjectURL(url); 
+        });
+    </script>
+</body>
+</html>
