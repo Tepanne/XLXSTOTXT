@@ -55,6 +55,9 @@
     textarea {
       height: 400px;
     }
+    .small-textarea {
+      height: 100px; /* Menentukan tinggi textarea yang lebih kecil */
+    }
     button {
       width: 100%;
       padding: 10px;
@@ -112,7 +115,9 @@
       <br><br>
       <input type="text" id="contact-name" placeholder="Nama Kontak">
       <button id="convertToVCFBtn">Konversi ke VCF</button>
-      <div id="file-areas"></div>
+      <div id="file-areas">
+        <!-- Contoh textarea dengan kelas kecil, akan diisi dinamis melalui JavaScript -->
+      </div>
     </section>
 
     <section id="splitVcfSection" class="section">
