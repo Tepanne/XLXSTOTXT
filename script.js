@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navyName = document.getElementById('navyNameInput').value.trim() || 'Navy';
     const anggotaName = document.getElementById('anggotaNameInput').value.trim() || 'Anggota';
     const filename = document.getElementById('vcfFilenameInput').value.trim() || 'kontak';
+    const buatFileAdmin = document.querySelector('input[name="buatFileAdmin"]:checked').value;
 
     if (!txtContent) {
       alert('Isi textarea tidak boleh kosong!');
@@ -57,38 +58,69 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const lines = txtContent.split('\n').map(line => line.trim());
-    let vcfContent = '';
+    let vcfContentAdminNavy = '';
+    let vcfContentAnggota = '';
     let currentCategory = '';
     let contactIndex = 1;
 
     lines.forEach(line => {
-      if (line.toLowerCase() === 'admin') {
-        currentCategory = adminName;
-        contactIndex = 1;
-      } else if (line.toLowerCase() === 'navy') {
-        currentCategory = navyName;
-        contactIndex = 1;
-      } else if (line.toLowerCase() === 'anggota') {
-        currentCategory = anggotaName;
-        contactIndex = 1;
-      } else if (line) {
-        let phoneNumber = line;
-        if (!phoneNumber.startsWith('+')) {
-          phoneNumber = '+' + phoneNumber;
+        const lowerCaseLine = line.toLowerCase();
+
+        if (['admin', '管理号', '管理', '管理员', '管理號'].includes(lowerCaseLine)) {
+            currentCategory = adminName;
+            contactIndex = 1;
+        } else if (['navy', '水軍', '小号', '水军', '水軍'].includes(lowerCaseLine)) {
+            currentCategory = navyName;
+            contactIndex = 1;
+        } else if (['anggota', '数据', '客户', '底料', '进群资源'].includes(lowerCaseLine)) {
+            currentCategory = anggotaName;
+            contactIndex = 1;
+        } else if (line) {
+            let phoneNumber = line;
+            if (!phoneNumber.startsWith('+')) {
+                phoneNumber = '+' + phoneNumber;
+            }
+            const vcfEntry = `BEGIN:VCARD\nVERSION:3.0\nFN:${currentCategory} ${contactIndex}\nTEL:${phoneNumber}\nEND:VCARD\n\n`;
+
+            if (currentCategory === adminName || currentCategory === navyName) {
+                vcfContentAdminNavy += vcfEntry;
+            } else {
+                vcfContentAnggota += vcfEntry;
+            }
+            contactIndex++;
         }
-        vcfContent += `BEGIN:VCARD\nVERSION:3.0\nFN:${currentCategory} ${contactIndex}\nTEL:${phoneNumber}\nEND:VCARD\n\n`;
-        contactIndex++;
-      }
     });
 
-    const blob = new Blob([vcfContent], { type: 'text/vcard' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${filename}.vcf`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
+    if (buatFileAdmin === 'ya') {
+        if (vcfContentAdminNavy) {
+            const blobAdminNavy = new Blob([vcfContentAdminNavy], { type: 'text/vcard' });
+            const urlAdminNavy = URL.createObjectURL(blobAdminNavy);
+            const aAdminNavy = document.createElement('a');
+            aAdminNavy.href = urlAdminNavy;
+            aAdminNavy.download = `${filename}_Admin.vcf`;
+            aAdminNavy.click();
+            URL.revokeObjectURL(urlAdminNavy);
+        }
+
+        if (vcfContentAnggota) {
+            const blobAnggota = new Blob([vcfContentAnggota], { type: 'text/vcard' });
+            const urlAnggota = URL.createObjectURL(blobAnggota);
+            const aAnggota = document.createElement('a');
+            aAnggota.href = urlAnggota;
+            aAnggota.download = `${filename}.vcf`;
+            aAnggota.click();
+            URL.revokeObjectURL(urlAnggota);
+        }
+    } else {
+        const blob = new Blob([vcfContentAdminNavy + vcfContentAnggota], { type: 'text/vcard' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.vcf`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+});
 
   // Proses file XLSX
   document.getElementById('fileInput').addEventListener('change', function(event) {
