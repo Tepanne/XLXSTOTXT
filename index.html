@@ -107,13 +107,17 @@
     <section id="convertTxtToVcf" class="section">
       <h2>Konversi TXT ke VCF</h2>
       <input type="file" id="txtFileInput">
-      <textarea id="txtContentBox" placeholder="Isi file teks akan ditampilkan di sini"></textarea>
+      <label>Buat file admin?</label>
+      <input type="radio" id="buatFileAdminYa" name="buatFileAdmin" value="ya"> Ya
+      <input type="radio" id="buatFileAdminTidak" name="buatFileAdmin" value="tidak" checked> Tidak
+      
+      <button id="convertTxtToVcfButton">Konversi TXT ke VCF</button>
+    
       <input type="text" id="adminNameInput" placeholder="Nama Admin">
       <input type="text" id="navyNameInput" placeholder="Nama Navy">
       <input type="text" id="anggotaNameInput" placeholder="Nama Anggota">
-      <input type="text" id="vcfFilenameInput" placeholder="Nama File VCF">
-      <button id="convertTxtToVcfButton">Konversi ke VCF</button>
-    </section>
+      <input type="text" id="vcfFilenameInput" placeholder="Nama File">
+      <textarea id="txtContentBox"></textarea>
 
     <section id="convertXlsxToTxt" class="section">
       <h2>Konversi XLSX ke TXT</h2>
